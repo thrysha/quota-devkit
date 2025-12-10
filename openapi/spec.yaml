@@ -1,0 +1,504 @@
+openapi: 3.0.3
+info:
+  title: Thrysha API
+  version: "1.0.0"
+  description: |
+    Quota management API with API-key auth for runtime calls and Firebase auth for account management.
+servers:
+  - url: https://api.example.com
+    description: Default API server (replace with your environment)
+security:
+  - ApiKeyAuth: []
+paths:
+  /v1/resources:
+    get:
+      summary: List resources
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+          description: Page number (default 1)
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+          description: Page size (default 50, max 200)
+      responses:
+        '200':
+          description: Paged resources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResources'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      summary: Create resource
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Resource created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /v1/resources/{resource_id}:
+    delete:
+      summary: Delete resource
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: resource_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /v1/quota-rules:
+    get:
+      summary: List quota rules for a resource
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: resource_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+      responses:
+        '200':
+          description: Paged quota rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedQuotaRules'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      summary: Create quota rule
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resource_id, quota_limit]
+              properties:
+                resource_id:
+                  type: string
+                quota_policy:
+                  type: string
+                  description: default "limited"
+                  enum: [limited, unlimited]
+                quota_limit:
+                  type: integer
+                  minimum: 1
+                reset_strategy:
+                  type: string
+                  enum: [rolling_window, fixed_window, no_reset]
+                reset_window_seconds:
+                  type: integer
+                  nullable: true
+                enforcement_mode:
+                  type: string
+                  enum: [enforced, monitor_only]
+      responses:
+        '201':
+          description: Quota rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuotaRule'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /v1/quota-rules/{rule_id}:
+    delete:
+      summary: Delete quota rule
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: rule_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /v1/quota/check:
+    post:
+      summary: Check quota for a resource
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resource_id, amount]
+              properties:
+                resource_id:
+                  type: string
+                amount:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Quota evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuotaCheckResponse'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /v1/quota/consume:
+    post:
+      summary: Consume quota (idempotent)
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resource_id, amount, request_id]
+              properties:
+                resource_id:
+                  type: string
+                amount:
+                  type: integer
+                  minimum: 1
+                request_id:
+                  type: string
+      responses:
+        '200':
+          description: Consumption result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuotaConsumeResponse'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /v1/summary:
+    get:
+      summary: Usage summary per resource per month
+      security:
+        - FirebaseAuth: []
+      parameters:
+        - in: query
+          name: start
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: Start timestamp (RFC3339)
+        - in: query
+          name: end
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: End timestamp (RFC3339)
+      responses:
+        '200':
+          description: Paginated usage summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageSummaryResponse'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /v1/me:
+    get:
+      summary: Current account (Firebase auth)
+      security:
+        - FirebaseAuth: []
+      responses:
+        '200':
+          description: Account info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string }
+                  email: { type: string, format: email }
+                  created_at: { type: integer, description: Unix timestamp }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /v1/accounts/{account_id}/apikeys:
+    post:
+      summary: Create API key (Firebase auth)
+      security:
+        - FirebaseAuth: []
+      parameters:
+        - in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: API key created (shows plaintext once)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key: { type: string }
+                  key_id: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    get:
+      summary: List API keys (Firebase auth)
+      security:
+        - FirebaseAuth: []
+      parameters:
+        - in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: API keys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIKey'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /v1/accounts/{account_id}/apikeys/{key_id}:
+    delete:
+      summary: Deactivate API key (Firebase auth)
+      security:
+        - FirebaseAuth: []
+      parameters:
+        - in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: key_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Revoked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /v1/admin/accounts/{account_id}:
+    delete:
+      summary: Purge account (admin-only)
+      security:
+        - FirebaseAuth: []
+      parameters:
+        - in: path
+          name: account_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: Use `Authorization: Bearer {API_KEY}`
+    FirebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Firebase ID token in `Authorization: Bearer {token}`
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+        message:
+          type: string
+    Resource:
+      type: object
+      properties:
+        id: { type: string }
+        account_id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        created_at: { type: string, format: date-time }
+    PaginatedResources:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Resource'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total:
+          type: integer
+    QuotaRule:
+      type: object
+      properties:
+        id: { type: string }
+        account_id: { type: string }
+        resource_id: { type: string }
+        quota_limit: { type: integer }
+        quota_policy: { type: string }
+        reset_strategy: { type: string }
+        enforcement_mode: { type: string }
+        reset_window_seconds:
+          type: integer
+          nullable: true
+        created_at: { type: string, format: date-time }
+    PaginatedQuotaRules:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuotaRule'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total:
+          type: integer
+    QuotaCheckResponse:
+      type: object
+      properties:
+        allowed: { type: boolean }
+        remaining: { type: integer }
+        limit: { type: integer }
+    QuotaConsumeResponse:
+      type: object
+      properties:
+        allowed: { type: boolean }
+        remaining: { type: integer }
+    UsageSummaryItem:
+      type: object
+      properties:
+        resource_id: { type: string }
+        resource_name: { type: string }
+        period_start: { type: string, format: date-time }
+        used: { type: integer }
+    UsageSummaryResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UsageSummaryItem'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total:
+          type: integer
+    APIKey:
+      type: object
+      properties:
+        id: { type: string }
+        account_id: { type: string }
+        active: { type: boolean }
+        created_at: { type: string, format: date-time }

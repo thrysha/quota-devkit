@@ -1,0 +1,264 @@
+{
+  "info": {
+    "name": "Thrysha API (API Key)",
+    "description": "API key authenticated endpoints for resources, quota rules, and quota actions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.example.com",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "YOUR_API_KEY",
+      "type": "string"
+    },
+    {
+      "key": "resource_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "quota_rule_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Resources",
+      "item": [
+        {
+          "name": "Create Resource",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"example-resource\",\n  \"description\": \"demo resource\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/resources",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "resources"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Resources",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/resources",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "resources"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Resource",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/resources/{{resource_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "resources",
+                "{{resource_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Quota Rules",
+      "item": [
+        {
+          "name": "Create Quota Rule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource_id\": \"{{resource_id}}\",\n  \"quota_policy\": \"limited\",\n  \"quota_limit\": 100,\n  \"reset_strategy\": \"fixed_window\",\n  \"reset_window_seconds\": 86400,\n  \"enforcement_mode\": \"enforced\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/quota-rules",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "quota-rules"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Quota Rules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/quota-rules?resource_id={{resource_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "quota-rules"
+              ],
+              "query": [
+                {
+                  "key": "resource_id",
+                  "value": "{{resource_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Quota Rule",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/quota-rules/{{quota_rule_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "quota-rules",
+                "{{quota_rule_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Quota Actions",
+      "item": [
+        {
+          "name": "Check Quota",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource_id\": \"{{resource_id}}\",\n  \"amount\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/quota/check",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "quota",
+                "check"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Consume Quota",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource_id\": \"{{resource_id}}\",\n  \"amount\": 1,\n  \"request_id\": \"req-123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/quota/consume",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "quota",
+                "consume"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
