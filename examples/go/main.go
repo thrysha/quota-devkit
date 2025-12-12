@@ -35,12 +35,12 @@ func main() {
 
 	// 2) Create quota rule
 	mustPost(client, base+"/v1/quota-rules", headers, map[string]any{
-		"resource_id":          resource["id"],
-		"quota_policy":         "limited",
-		"quota_limit":          100,
-		"reset_strategy":       "fixed_window",
-		"reset_window_seconds": 86400,
-		"enforcement_mode":     "enforced",
+		"resource_id":            resource["id"],
+		"quota_policy":           "limited",
+		"quota_limit":            100,
+		"reset_strategy":         "fixed_window",
+		"reset_interval_seconds": 86400,
+		"enforcement_mode":       "enforced",
 	})
 	fmt.Println("Quota rule created")
 

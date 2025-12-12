@@ -22,7 +22,7 @@ echo "Creating quota rule"
 curl -sS -X POST "$BASE_URL/v1/quota-rules" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
-  -d "{\"resource_id\":\"$resource_id\",\"quota_policy\":\"limited\",\"quota_limit\":100,\"reset_strategy\":\"fixed_window\",\"reset_window_seconds\":86400,\"enforcement_mode\":\"enforced\"}" >/dev/null
+  -d "{\"resource_id\":\"$resource_id\",\"quota_policy\":\"limited\",\"quota_limit\":100,\"reset_strategy\":\"fixed_window\",\"reset_interval_seconds\":86400,\"enforcement_mode\":\"enforced\"}" >/dev/null
 
 echo "Checking quota"
 check=$(curl -sS -X POST "$BASE_URL/v1/quota/check" \

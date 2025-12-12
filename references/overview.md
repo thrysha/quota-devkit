@@ -8,6 +8,6 @@ Core endpoints:
 - `/v1/resources` for creating, listing, and deleting resources
 - `/v1/quota-rules` for attaching quota rules to resources
 - `/v1/quota/check` to evaluate a request without consuming usage
-- `/v1/quota/consume` to record usage with idempotency
+ - `/v1/quota/consume` to record usage with idempotency (returns `allowed=false` on enforced limit breaches with HTTP 200)
 
 The API uses API-key authentication for runtime quota calls and Firebase authentication for account-level operations such as managing API keys.

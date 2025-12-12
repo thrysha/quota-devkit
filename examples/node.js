@@ -45,7 +45,7 @@ async function main() {
       quota_policy: "limited",
       quota_limit: 100,
       reset_strategy: "fixed_window",
-      reset_window_seconds: 86400,
+      reset_interval_seconds: 86400,
       enforcement_mode: "enforced",
     }),
   });

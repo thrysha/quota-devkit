@@ -18,7 +18,7 @@ Content-Type: application/json
   "quota_policy": "limited",
   "quota_limit": 100,
   "reset_strategy": "fixed_window",
-  "reset_window_seconds": 86400,
+  "reset_interval_seconds": 86400,
   "enforcement_mode": "enforced"
 }
 ```
@@ -43,4 +43,4 @@ Content-Type: application/json
 }
 ```
 
-This sequence provides predictable enforcement with retry safety and clear reset times.
+This sequence provides predictable enforcement with retry safety; when a limit would be exceeded on enforced rules, the consume call returns 200 with `allowed=false` and the current remaining value.

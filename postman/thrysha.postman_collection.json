@@ -126,7 +126,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"resource_id\": \"{{resource_id}}\",\n  \"quota_policy\": \"limited\",\n  \"quota_limit\": 100,\n  \"reset_strategy\": \"fixed_window\",\n  \"reset_window_seconds\": 86400,\n  \"enforcement_mode\": \"enforced\"\n}"
+              "raw": "{\n  \"resource_id\": \"{{resource_id}}\",\n  \"quota_policy\": \"limited\",\n  \"quota_limit\": 100,\n  \"reset_strategy\": \"fixed_window\",\n  \"reset_interval_seconds\": 86400,\n  \"enforcement_mode\": \"enforced\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/v1/quota-rules",

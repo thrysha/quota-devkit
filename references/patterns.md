@@ -16,5 +16,5 @@ Use `monitor_only` rules to observe usage without blocking. Switch to `enforced`
 Always include a stable `request_id` when consuming quota to avoid double counting. This is suitable for queues, workers, and serverless functions.
 
 ## Free-tier implementation
-Assign low daily or monthly limits to free users, and higher limits to paid plans by adjusting the rule’s quota_limit and reset_window_seconds.
+Assign low daily or monthly limits to free users, and higher limits to paid plans by adjusting the rule’s quota_limit and reset_interval_seconds.
 

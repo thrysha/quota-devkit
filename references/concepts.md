@@ -15,7 +15,7 @@ Fields:
 - `quota_policy` (limited or unlimited)
 - `quota_limit` for limited rules
 - `reset_strategy` (rolling_window, fixed_window, or no_reset)
-- `reset_window_seconds` for windowed strategies
+- `reset_interval_seconds` for windowed strategies
 - `enforcement_mode` (enforced or monitor_only)
 
 ## Check vs Consume

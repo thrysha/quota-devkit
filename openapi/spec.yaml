@@ -140,7 +140,7 @@ paths:
                 reset_strategy:
                   type: string
                   enum: [rolling_window, fixed_window, no_reset]
-                reset_window_seconds:
+                reset_interval_seconds:
                   type: integer
                   nullable: true
                 enforcement_mode:
@@ -227,7 +227,7 @@ paths:
                   type: string
       responses:
         '200':
-          description: Consumption result
+          description: Consumption result (if the limit would be exceeded on enforced rules, `allowed` is false and `remaining` is returned with HTTP 200)
           content:
             application/json:
               schema:
@@ -447,7 +447,7 @@ components:
         quota_policy: { type: string }
         reset_strategy: { type: string }
         enforcement_mode: { type: string }
-        reset_window_seconds:
+        reset_interval_seconds:
           type: integer
           nullable: true
         created_at: { type: string, format: date-time }
