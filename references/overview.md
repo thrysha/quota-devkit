@@ -7,8 +7,8 @@ A resource represents any billable or limited action. Each resource may have a s
 Core endpoints:
 - `/v1/resources` for creating, listing, and deleting resources
 - `/v1/quota-rules` for attaching quota rules to resources
-- `/v1/quota/check` to evaluate a request without consuming usage
- - `/v1/quota/consume` to record usage with idempotency (returns `allowed=false` on enforced limit breaches with HTTP 200)
+- `/v1/quota/check` to evaluate a request without consuming usage (requires `subject_id` to scope per subject)
+- `/v1/quota/consume` to record usage with idempotency (requires `subject_id`; returns `allowed=false` on enforced limit breaches with HTTP 200)
 
 The API uses API-key authentication for runtime quota calls and Firebase authentication for account-level operations such as managing API keys.
 
@@ -19,3 +19,4 @@ The API uses API-key authentication for runtime quota calls and Firebase authent
 ### Persistence guarantees
 - Enforcement counters live in Redis with TTLs set to the current window. If Redis is empty but the snapshot/state store is configured, the first check/consume rehydrates from durable state; otherwise counters restart at zero.
 - Usage history for summaries is persisted separately. Without Redis persistence (AOF/RDB), a Redis crash can drop up to roughly `snapshot interval + current window` of usage; both enforcement and billing effectively forgive that interval. Enabling Redis persistence or shortening the snapshot interval reduces exposure.
+- All enforcement and idempotency are scoped to `(resource_id, subject_id)` so subjects do not interfere with each other.

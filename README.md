@@ -3,6 +3,7 @@
 Developer toolkit for integrating with the Thrysha API. This repo bundles runnable examples, the OpenAPI spec, a Postman collection, and reference docs.
 
 Key defaults:
+- Quota checks/consumes require `subject_id` so usage is isolated per subject under a resource.
 - Quota rules use `reset_strategy` objects (`unit` + `interval`) aligned to UTC boundaries (hour/day/week/month/year/never).
 - Resource names are unique per account (case-insensitive), but stored/returned with client casing.
 - Persistence: enforcement counters live in Redis; if Redis is not persisted, a crash can lose up to ~`snapshot interval + current window` of usage (effectively forgiven). Snapshots/state are durable; rehydration happens on first check/consume when configured.

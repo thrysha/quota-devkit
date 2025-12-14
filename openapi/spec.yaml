@@ -194,9 +194,11 @@ paths:
           application/json:
             schema:
               type: object
-              required: [resource_id, amount]
+              required: [resource_id, subject_id, amount]
               properties:
                 resource_id:
+                  type: string
+                subject_id:
                   type: string
                 amount:
                   type: integer
@@ -221,9 +223,11 @@ paths:
           application/json:
             schema:
               type: object
-              required: [resource_id, amount, request_id]
+              required: [resource_id, subject_id, amount, request_id]
               properties:
                 resource_id:
+                  type: string
+                subject_id:
                   type: string
                 amount:
                   type: integer

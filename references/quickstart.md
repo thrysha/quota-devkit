@@ -27,7 +27,7 @@ Content-Type: application/json
 POST /v1/quota/check
 Content-Type: application/json
 
-{ "resource_id": "...", "amount": 1 }
+{ "resource_id": "...", "subject_id": "user_123", "amount": 1 }
 ```
 
 ## 4. Consume quota with an idempotent request ID
@@ -37,6 +37,7 @@ Content-Type: application/json
 
 {
   "resource_id": "...",
+  "subject_id": "user_123",
   "amount": 1,
   "request_id": "unique-operation-id"
 }
