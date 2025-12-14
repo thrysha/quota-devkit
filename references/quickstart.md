@@ -17,8 +17,7 @@ Content-Type: application/json
   "resource_id": "...",
   "quota_policy": "limited",
   "quota_limit": 100,
-  "reset_strategy": "fixed_window",
-  "reset_interval_seconds": 86400,
+  "reset_strategy": { "unit": "day", "interval": 1 }, // hour|day|week|month|year|never
   "enforcement_mode": "enforced"
 }
 ```

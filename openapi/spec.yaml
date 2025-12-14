@@ -138,14 +138,19 @@ paths:
                   type: integer
                   minimum: 1
                 reset_strategy:
-                  type: string
-                  enum: [rolling_window, fixed_window, no_reset]
-                reset_interval_seconds:
-                  type: integer
-                  nullable: true
+                  type: object
+                  properties:
+                    unit:
+                      type: string
+                      enum: [hour, day, week, month, year, never]
+                    interval:
+                      type: integer
+                      minimum: 1
+                      nullable: true
+                  required: [unit]
                 enforcement_mode:
                   type: string
-                  enum: [enforced, monitor_only]
+                  enum: [enforced, non_enforced]
       responses:
         '201':
           description: Quota rule created
@@ -445,11 +450,20 @@ components:
         resource_id: { type: string }
         quota_limit: { type: integer }
         quota_policy: { type: string }
-        reset_strategy: { type: string }
-        enforcement_mode: { type: string }
-        reset_interval_seconds:
-          type: integer
-          nullable: true
+        reset_strategy:
+          type: object
+          properties:
+            unit:
+              type: string
+              enum: [hour, day, week, month, year, never]
+            interval:
+              type: integer
+              minimum: 1
+              nullable: true
+          required: [unit]
+        enforcement_mode:
+          type: string
+          enum: [enforced, non_enforced]
         created_at: { type: string, format: date-time }
     PaginatedQuotaRules:
       type: object
