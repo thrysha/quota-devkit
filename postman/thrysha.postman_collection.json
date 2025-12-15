@@ -16,8 +16,13 @@
       "type": "string"
     },
     {
-      "key": "resource_id",
-      "value": "",
+      "key": "resource_key",
+      "value": "example-resource",
+      "type": "string"
+    },
+    {
+      "key": "subject_id",
+      "value": "user-123",
       "type": "string"
     },
     {
@@ -46,7 +51,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"example-resource\",\n  \"description\": \"demo resource\"\n}"
+              "raw": "{\n  \"resource_key\": \"{{resource_key}}\",\n  \"description\": \"demo resource\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/v1/resources",
@@ -93,14 +98,14 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/resources/{{resource_id}}",
+              "raw": "{{base_url}}/v1/resources/{{resource_key}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "v1",
                 "resources",
-                "{{resource_id}}"
+                "{{resource_key}}"
               ]
             }
           }
@@ -126,7 +131,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"resource_id\": \"{{resource_id}}\",\n  \"quota_policy\": \"limited\",\n  \"quota_limit\": 100,\n  \"reset_strategy\": \"fixed_window\",\n  \"reset_interval_seconds\": 86400,\n  \"enforcement_mode\": \"enforced\"\n}"
+              "raw": "{\n  \"resource_key\": \"{{resource_key}}\",\n  \"quota_policy\": \"limited\",\n  \"quota_limit\": 100,\n  \"reset_strategy\": { \"unit\": \"day\", \"interval\": 1 },\n  \"enforcement_mode\": \"enforced\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/v1/quota-rules",
@@ -151,7 +156,7 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/v1/quota-rules?resource_id={{resource_id}}",
+              "raw": "{{base_url}}/v1/quota-rules?resource_key={{resource_key}}",
               "host": [
                 "{{base_url}}"
               ],
@@ -161,8 +166,8 @@
               ],
               "query": [
                 {
-                  "key": "resource_id",
-                  "value": "{{resource_id}}"
+                  "key": "resource_key",
+                  "value": "{{resource_key}}"
                 }
               ]
             }
@@ -212,7 +217,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"resource_id\": \"{{resource_id}}\",\n  \"amount\": 1\n}"
+              "raw": "{\n  \"resource_key\": \"{{resource_key}}\",\n  \"subject_id\": \"{{subject_id}}\",\n  \"amount\": 1\n}"
             },
             "url": {
               "raw": "{{base_url}}/v1/quota/check",
@@ -243,7 +248,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"resource_id\": \"{{resource_id}}\",\n  \"amount\": 1,\n  \"request_id\": \"req-123\"\n}"
+              "raw": "{\n  \"resource_key\": \"{{resource_key}}\",\n  \"subject_id\": \"{{subject_id}}\",\n  \"amount\": 1,\n  \"request_id\": \"req-123\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/v1/quota/consume",

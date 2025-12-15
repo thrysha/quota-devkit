@@ -10,7 +10,9 @@ Tip: keep IDs stable so diffs stay readable in PRs.
 3) Create an environment with:
    - `base_url` (e.g., `https://api.thrysha.com`)
    - `api_key` (your Thrysha API key)
-   - Optional: `resource_id`, `quota_rule_id` to speed up delete/check calls.
-4) Call “Create Resource” → copy its `id` into the environment’s `resource_id`.
+   - `resource_key` (set to the handle you create)
+   - `subject_id` (any subject under that resource)
+   - Optional: `quota_rule_id` to speed up deletes.
+4) Call “Create Resource” → it uses `resource_key`.
 5) Call “Create Quota Rule” → copy its `id` into `quota_rule_id` if you plan to delete it.
-6) Use “Check Quota” / “Consume Quota” with those IDs; “List” endpoints work without extra setup.
+6) Use “Check Quota” / “Consume Quota” with `resource_key` and `subject_id`; “List” endpoints work without extra setup.

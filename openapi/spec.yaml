@@ -47,10 +47,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name]
+              required: [resource_key]
               properties:
-                name:
+                resource_key:
                   type: string
+                  pattern: '^[a-z0-9][a-z0-9_-]{1,62}$'
+                  description: Case-insensitive unique handle per account
                 description:
                   type: string
       responses:
@@ -62,14 +64,14 @@ paths:
                 $ref: '#/components/schemas/Resource'
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /v1/resources/{resource_id}:
+  /v1/resources/{resource_key}:
     delete:
       summary: Delete resource
       security:
         - ApiKeyAuth: []
       parameters:
         - in: path
-          name: resource_id
+          name: resource_key
           required: true
           schema:
             type: string
@@ -92,7 +94,7 @@ paths:
         - ApiKeyAuth: []
       parameters:
         - in: query
-          name: resource_id
+          name: resource_key
           required: true
           schema:
             type: string
@@ -126,9 +128,9 @@ paths:
           application/json:
             schema:
               type: object
-              required: [resource_id, quota_limit]
+              required: [resource_key, quota_limit]
               properties:
-                resource_id:
+                resource_key:
                   type: string
                 quota_policy:
                   type: string
@@ -194,9 +196,9 @@ paths:
           application/json:
             schema:
               type: object
-              required: [resource_id, subject_id, amount]
+              required: [resource_key, subject_id, amount]
               properties:
-                resource_id:
+                resource_key:
                   type: string
                 subject_id:
                   type: string
@@ -223,9 +225,9 @@ paths:
           application/json:
             schema:
               type: object
-              required: [resource_id, subject_id, amount, request_id]
+              required: [resource_key, subject_id, amount, request_id]
               properties:
-                resource_id:
+                resource_key:
                   type: string
                 subject_id:
                   type: string
@@ -245,7 +247,7 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
   /v1/summary:
     get:
-      summary: Usage summary per resource per month
+      summary: Usage summary per resource and subject per month
       security:
         - FirebaseAuth: []
       parameters:
@@ -430,7 +432,9 @@ components:
       properties:
         id: { type: string }
         account_id: { type: string }
-        name: { type: string }
+        resource_key:
+          type: string
+          description: Case-insensitive unique handle per account
         description: { type: string }
         created_at: { type: string, format: date-time }
     PaginatedResources:
@@ -497,7 +501,10 @@ components:
       type: object
       properties:
         resource_id: { type: string }
-        resource_name: { type: string }
+        resource_name:
+          type: string
+          description: Resource key casing as supplied during creation
+        subject_id: { type: string }
         period_start: { type: string, format: date-time }
         used: { type: integer }
     UsageSummaryResponse:

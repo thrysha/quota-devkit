@@ -26,36 +26,38 @@ func main() {
 	}
 
 	// 1) Create resource
-	resourceName := fmt.Sprintf("example-resource-%d", time.Now().Unix())
+	resourceKey := fmt.Sprintf("example-resource-%d", time.Now().Unix())
+	subjectID := fmt.Sprintf("user-%d", time.Now().Unix())
 	resource := mustPost(client, base+"/v1/resources", headers, map[string]any{
-		"name":        resourceName,
+		"resource_key": resourceKey,
 		"description": "example",
 	})
 	fmt.Printf("Resource created: %s\n", toJSON(resource))
 
 	// 2) Create quota rule
 	mustPost(client, base+"/v1/quota-rules", headers, map[string]any{
-		"resource_id":            resource["id"],
-		"quota_policy":           "limited",
-		"quota_limit":            100,
-		"reset_strategy":         "fixed_window",
-		"reset_interval_seconds": 86400,
-		"enforcement_mode":       "enforced",
+		"resource_key":      resourceKey,
+		"quota_policy":      "limited",
+		"quota_limit":       100,
+		"reset_strategy":    map[string]any{"unit": "day", "interval": 1},
+		"enforcement_mode":  "enforced",
 	})
 	fmt.Println("Quota rule created")
 
 	// 3) Check quota
 	check := mustPost(client, base+"/v1/quota/check", headers, map[string]any{
-		"resource_id": resource["id"],
-		"amount":      1,
+		"resource_key": resourceKey,
+		"subject_id":   subjectID,
+		"amount":       1,
 	})
 	fmt.Printf("Check response: %s\n", toJSON(check))
 
 	// 4) Consume quota
 	consume := mustPost(client, base+"/v1/quota/consume", headers, map[string]any{
-		"resource_id": resource["id"],
-		"amount":      1,
-		"request_id":  fmt.Sprintf("req-%d", rand.Int63()),
+		"resource_key": resourceKey,
+		"subject_id":   subjectID,
+		"amount":       1,
+		"request_id":   fmt.Sprintf("req-%d", rand.Int63()),
 	})
 	fmt.Printf("Consume response: %s\n", toJSON(consume))
 }

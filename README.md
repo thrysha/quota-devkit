@@ -4,9 +4,9 @@ Developer toolkit for integrating with the Thrysha API. This repo bundles runnab
 
 Key defaults:
 - Quota checks/consumes require `subject_id` so usage is isolated per subject under a resource.
-- Quota rules use `reset_strategy` objects (`unit` + `interval`) aligned to UTC boundaries (hour/day/week/month/year/never).
-- Resource names are unique per account (case-insensitive), but stored/returned with client casing.
-- Persistence: enforcement counters live in Redis; if Redis is not persisted, a crash can lose up to ~`snapshot interval + current window` of usage (effectively forgiven). Snapshots/state are durable; rehydration happens on first check/consume when configured.
+- Quota rules use `reset_strategy` objects (`unit` + `interval`) aligned to UTC boundaries (hour/day/week/month/year/never), with intervals capped to at most one year of duration (hour ≤ 8,760; day ≤ 365; week ≤ 52; month ≤ 12; year interval ≤ 1).
+- Resource keys are unique per account (case-insensitive), but stored/returned with client casing.
+- Persistence: enforcement counters live in Redis; use AOF (e.g., `appendfsync everysec`) to avoid cold starts. When Redis is unhealthy, the API returns 503 for check/consume and snapshotting pauses until a bulk hydrate restores counters from durable state. Without persistence, a crash can lose up to ~`snapshot interval + current window` of usage (effectively forgiven).
 
 ## What's inside
 - `examples/` — focused code snippets for core flows (resource + quota create/check/consume).

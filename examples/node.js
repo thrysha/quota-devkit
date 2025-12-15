@@ -26,13 +26,14 @@ async function request(path, options) {
 }
 
 async function main() {
-  const resourceName = `example-resource-${Date.now()}`;
+  const resourceKey = `example-resource-${Date.now()}`;
+  const subjectId = `user-${Date.now()}`;
 
   // 1) Create resource
   const resource = await request("/v1/resources", {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ name: resourceName, description: "example" }),
+    body: JSON.stringify({ resource_key: resourceKey, description: "example" }),
   });
   console.log("Resource created:", resource);
 
@@ -41,11 +42,10 @@ async function main() {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
-      resource_id: resource.id,
+      resource_key: resourceKey,
       quota_policy: "limited",
       quota_limit: 100,
-      reset_strategy: "fixed_window",
-      reset_interval_seconds: 86400,
+      reset_strategy: { unit: "day", interval: 1 },
       enforcement_mode: "enforced",
     }),
   });
@@ -55,7 +55,7 @@ async function main() {
   const check = await request("/v1/quota/check", {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ resource_id: resource.id, amount: 1 }),
+    body: JSON.stringify({ resource_key: resourceKey, subject_id: subjectId, amount: 1 }),
   });
   console.log("Check response:", check);
 
@@ -64,7 +64,8 @@ async function main() {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
-      resource_id: resource.id,
+      resource_key: resourceKey,
+      subject_id: subjectId,
       amount: 1,
       request_id: crypto.randomUUID(),
     }),
