@@ -5,10 +5,10 @@ Focused code snippets for common flows:
 - Check vs. consume with idempotency
 - Monitor-mode handling (log-only)
 
-## Running the API flow samples
+## Running the Quota API flow samples
 All examples assume two env vars:
-- `BASE_URL` — e.g., `https://api.thrysha.com`
-- `API_KEY` — your Thrysha API key
+- `BASE_URL` — e.g., `https://quota-api.thrysha.io`
+- `API_KEY` — your Quota API key
 
 Examples available:
 - Node.js: `node examples/node.js`

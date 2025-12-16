@@ -1,6 +1,6 @@
 # Postman / Hoppscotch Collections
 
-- `thrysha.postman_collection.json` — main Postman collection.
+- `thrysha.postman_collection.json` — main Postman collection for the Quota API.
 
 Tip: keep IDs stable so diffs stay readable in PRs.
 
@@ -8,8 +8,8 @@ Tip: keep IDs stable so diffs stay readable in PRs.
 1) Install Postman (or Hoppscotch) locally.
 2) Import `thrysha.postman_collection.json`.
 3) Create an environment with:
-   - `base_url` (e.g., `https://api.thrysha.com`)
-   - `api_key` (your Thrysha API key)
+   - `base_url` (e.g., `https://quota-api.thrysha.io`)
+   - `api_key` (your Quota API key)
    - `resource_key` (set to the handle you create)
    - `subject_id` (any subject under that resource)
    - Optional: `quota_rule_id` to speed up deletes.
